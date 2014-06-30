@@ -44,13 +44,13 @@ import coffeecoin.network.TxAction;
 public class WalletPanel extends JPanel {
 	
 	private static final long serialVersionUID = 3649700800374438134L;
-	private JList list;
+	private JList<Object> list;
 	private JLabel balance;
 	private JButton sendButton;
 	private JButton addButton;
 
 	public WalletPanel() throws SqlJetException {
-		list = new JList(); //data has type Object[]
+		list = new JList<Object>(); //data has type Object[]
 		list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		list.setVisibleRowCount(-1);

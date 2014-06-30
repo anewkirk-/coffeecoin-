@@ -6,10 +6,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -19,14 +15,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.tmatesoft.sqljet.core.SqlJetException;
-
 import coffeecoin.main.DbBuilder;
 import coffeecoin.main.Genesis;
 import coffeecoin.main.Miner;
-import coffeecoin.main.Tools;
 import coffeecoin.network.ClientAgent;
 import coffeecoin.network.NetworkTestAction;
-import coffeecoin.network.TxAction;
 import coffeecoin.network.UpdateAction;
 
 /**

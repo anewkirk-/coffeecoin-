@@ -20,6 +20,7 @@ public abstract class DbManager {
             offset += numread;
 		}
         if (offset < bFile.length) {
+        	fis.close();
             throw new IOException("Could not completely read file "+db.getName());
         }
 		fis.close();

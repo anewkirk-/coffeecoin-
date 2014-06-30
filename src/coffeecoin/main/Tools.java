@@ -3,7 +3,6 @@ package coffeecoin.main;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -23,7 +22,6 @@ import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-
 import coffeecoin.network.BlockMinedAction;
 import coffeecoin.network.TxAction;
 
@@ -246,13 +244,15 @@ public class Tools {
 	public static double findDifficultyFromTarget(BigInteger target) {
 		double diff1t = Configuration.DIFFICULTY_1_TARGET.doubleValue();
 		double t = target.doubleValue();
-		return (double)t/diff1t;
+		return t/diff1t;
 	}
 	
 	public static BigInteger retarget(double difficulty, long time, BigInteger lastTarget) {
 		double newDifficulty = difficulty / ((double)time/Configuration.BLOCK_TIME);
 		System.out.println("new diff: " + newDifficulty);
-		return lastTarget.multiply(BigDecimal.valueOf(newDifficulty).toBigInteger());
+		double newTarget = newDifficulty * lastTarget.doubleValue();
+		BigDecimal bd = new BigDecimal(newTarget);
+		return bd.toBigInteger();
 	}
 	
 //	public static double getDifficulty() {
