@@ -1,0 +1,24 @@
+#Re-write WalletPanel.newTx()??, and possibly move the logic into another class altogether
+
+#Comment Miner, Tools, Configuration
+
+#Modify verifyTransaction() to also check the number of confirms a transaction has
+---do i need another db table for this?
+
+#fix Tools.findDiffFromTarget()
+
+#fix Tools.retarget()
+
+#create Tools.getDifficulty()
+
+#create SomeType Tools.retarget()
+
+#Modify Miner.run() to use a target instead of a certain number of leading 0's
+
+#write a method to make a packed representation of a hex target number
+	Tools.packTarget()
+
+#Modify blockchain db so that each block stores a packed representation of its hex target
+
+#change BlockchainDbManager.updateDb() to check for total difficulty instead of simply 
+	number of blocks
