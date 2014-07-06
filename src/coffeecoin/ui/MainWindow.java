@@ -23,12 +23,12 @@ import coffeecoin.network.NetworkTestAction;
 import coffeecoin.network.UpdateAction;
 
 /**
- * This is the main class for the GUI
- * It should always be launched from Main
- * @author 
+ * This is the main class for the GUI It should always be launched from Main
+ * 
+ * @author
  */
 public class MainWindow extends JFrame {
-	
+
 	private JTabbedPane tabbedPane;
 	private MinerPanel minerPanel;
 	private NetworkPanel networkPanel;
@@ -42,16 +42,16 @@ public class MainWindow extends JFrame {
 		this.initUI();
 		this.clientAgent = ClientAgent.getInstance();
 	}
-	
+
 	public static MainWindow getInstance() throws SqlJetException {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new MainWindow();
 		}
 		return instance;
 	}
-	
+
 	private void initUI() throws SqlJetException {
-		//set up swing components here
+		// set up swing components here
 		this.tabbedPane = new JTabbedPane();
 		this.minerPanel = new MinerPanel();
 		this.networkPanel = new NetworkPanel();
@@ -63,14 +63,14 @@ public class MainWindow extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				int selected = tabbedPane.getSelectedIndex();
-				switch(selected) {
-					case 0:
-						minerPanel.repaint();
-						break;
-					case 1:
-						networkPanel.repaint();
-						break;
-					case 2:
+				switch (selected) {
+				case 0:
+					minerPanel.repaint();
+					break;
+				case 1:
+					networkPanel.repaint();
+					break;
+				case 2:
 					try {
 						walletPanel.updateAddressList();
 						walletPanel.updateBalance();
@@ -78,23 +78,24 @@ public class MainWindow extends JFrame {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-						walletPanel.repaint();
-						break;
+					walletPanel.repaint();
+					break;
 				}
 			}
 		});
 		this.getContentPane().add(tabbedPane);
 		this.setJMenuBar(initMenuBar());
-		this.setSize(new Dimension(600,310));
+		this.setSize(new Dimension(600, 310));
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-	
+
 	private JMenuBar initMenuBar() {
 		JMenuBar mb = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
 		JMenu debugMenu = new JMenu("Debug");
-		JMenuItem sendNetTestActionItem = new JMenuItem("Send Network Test Action");
+		JMenuItem sendNetTestActionItem = new JMenuItem(
+				"Send Network Test Action");
 		sendNetTestActionItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -111,7 +112,8 @@ public class MainWindow extends JFrame {
 		addPeerMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String newPeer = JOptionPane.showInputDialog("Enter IP for new peer:");
+				String newPeer = JOptionPane
+						.showInputDialog("Enter IP for new peer:");
 				try {
 					clientAgent.addPeer(InetAddress.getByName(newPeer));
 					clientAgent.sendAction(new UpdateAction());
@@ -148,7 +150,7 @@ public class MainWindow extends JFrame {
 		});
 		JMenuItem genesisBlockMenuItem = new JMenuItem("Build Genesis Block");
 		genesisBlockMenuItem.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -197,7 +199,7 @@ public class MainWindow extends JFrame {
 
 	public void updatePanels() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

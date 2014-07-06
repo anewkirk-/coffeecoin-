@@ -6,32 +6,35 @@ import java.io.IOException;
 import java.net.*;
 
 /**
- * This class listens for incoming network connections,
- * and launches a new NetworkRequestHandler for each one.
- * Once launched, it listens indefinitely until application exit
- * @author 
+ * This class listens for incoming network connections, and launches a new
+ * NetworkRequestHandler for each one. Once launched, it listens indefinitely
+ * until application exit
+ * 
+ * @author
  */
 public class NetworkListener extends Thread {
-	
+
 	private ServerSocket servSocket;
 	private static NetworkListener instance;
 
-	private NetworkListener() {}
-	
+	private NetworkListener() {
+	}
+
 	public static NetworkListener getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new NetworkListener();
 		}
 		return instance;
 	}
-	
+
 	public void run() {
 		try {
 			servSocket = new ServerSocket(NetworkConfiguration.PORT);
-			while(true){
+			while (true) {
 				Socket newClient = servSocket.accept();
 				ClientAgent.getInstance().addPeer(newClient.getInetAddress());
-				NetworkRequestHandler handler = new NetworkRequestHandler(newClient);
+				NetworkRequestHandler handler = new NetworkRequestHandler(
+						newClient);
 				handler.start();
 			}
 		} catch (IOException e) {

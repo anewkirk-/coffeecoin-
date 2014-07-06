@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 
 /**
  * 
- * @author 
+ * @author
  */
 public class NetworkPanel extends JPanel {
 

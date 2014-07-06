@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-
 import coffeecoin.main.BlockchainDbManager;
 import coffeecoin.main.Miner;
-import coffeecoin.main.Tools;
 import coffeecoin.main.UpdateState;
+import coffeecoin.main.VerificationTools;
 import coffeecoin.ui.MainWindow;
 
 /**
- * This class is instantiated and started each time
- * a new connection is received. 
+ * This class is instantiated and started each time a new connection is
+ * received.
  */
 public class NetworkRequestHandler extends Thread {
 
@@ -22,7 +21,7 @@ public class NetworkRequestHandler extends Thread {
 	private Miner miner;
 	private Socket socket;
 	private String host;
-	
+
 	public NetworkRequestHandler(Socket socket) throws Exception {
 		this.dbman = BlockchainDbManager.getInstance();
 		this.gui = MainWindow.getInstance();
@@ -42,61 +41,66 @@ public class NetworkRequestHandler extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Retrieves a NetworkAction from the socket passed
-	 * in when the NetworkRequestHandler was instantiated.
+	 * Retrieves a NetworkAction from the socket passed in when the
+	 * NetworkRequestHandler was instantiated.
 	 */
-	private NetworkAction getAction() throws IOException, ClassNotFoundException {
+	private NetworkAction getAction() throws IOException,
+			ClassNotFoundException {
 		InputStream is = socket.getInputStream();
 		ObjectInputStream ois = new ObjectInputStream(is);
-		NetworkAction receivedAction = (NetworkAction)ois.readObject();
+		NetworkAction receivedAction = (NetworkAction) ois.readObject();
 		return receivedAction;
 	}
-	
+
 	/**
 	 * This method defines behavior for each type of NetworkAction.
 	 */
 	public void processRequest(NetworkAction a) throws Exception {
-		if(a instanceof TxAction) {
-			TxAction currentTransaction = (TxAction)a;
-			boolean validTx = Tools.verifyTransaction(currentTransaction);
+		if (a instanceof TxAction) {
+			TxAction currentTransaction = (TxAction) a;
+			boolean validTx = VerificationTools.verifyTransaction(currentTransaction);
 			System.out.println("Valid TX:" + validTx);
 			float balance = dbman.checkBalance(currentTransaction.getInput());
-			if((balance >= currentTransaction.getAmt() || ((TxAction) a).getInput().equals("coinbase")) && validTx) {
+			if ((balance >= currentTransaction.getAmt() || ((TxAction) a)
+					.getInput().equals("coinbase")) && validTx) {
 				dbman.addTx(currentTransaction);
 				miner.checkDb();
 				gui.updatePanels();
 			}
 		}
-		if(a instanceof BlockMinedAction) {
-			BlockMinedAction blockMined = (BlockMinedAction)a;
-			boolean valid = Tools.verifyBlock(blockMined);
-			if(valid) {
+		if (a instanceof BlockMinedAction) {
+			BlockMinedAction blockMined = (BlockMinedAction) a;
+			boolean valid = VerificationTools.verifyBlock(blockMined);
+			if (valid) {
 				dbman.addBlock(blockMined);
 				miner.checkDb();
 				gui.updatePanels();
 			}
-			
+
 		}
-		if(a instanceof UpdateAction) {
-			UpdateAction update = (UpdateAction)a;
+		if (a instanceof UpdateAction) {
+			UpdateAction update = (UpdateAction) a;
 			UpdateState upToDate = dbman.hasNewer(update);
 			System.out.println("Update received:" + upToDate);
-			switch(upToDate) {
+			switch (upToDate) {
 			case OLDER: {
-				if(!socket.getInetAddress().toString().equals("/127.0.0.1")){
-					System.out.println("[+] Responding to InetAddress: " + socket.getInetAddress());
-					Socket newSocket = new Socket(socket.getInetAddress(), NetworkConfiguration.PORT);
-					NetworkSender netSender = new NetworkSender(newSocket, new UpdateAction());
+				if (!socket.getInetAddress().toString().equals("/127.0.0.1")) {
+					System.out.println("[+] Responding to InetAddress: "
+							+ socket.getInetAddress());
+					Socket newSocket = new Socket(socket.getInetAddress(),
+							NetworkConfiguration.PORT);
+					NetworkSender netSender = new NetworkSender(newSocket,
+							new UpdateAction());
 					netSender.start();
 				}
 				break;
 			}
 			case EQUAL: {
-				//Do nothing if they're the same
+				// Do nothing if they're the same
 				break;
-			} 
+			}
 			case NEWER: {
 				System.out.println("\"NEWER\" code block executing");
 				dbman.updateDb(update.getDb());
@@ -107,7 +111,7 @@ public class NetworkRequestHandler extends Thread {
 			}
 			}
 		}
-		if(a instanceof NetworkTestAction) {
+		if (a instanceof NetworkTestAction) {
 			gui.displayMessage("NetworkTestAction Received");
 		}
 	}

@@ -6,19 +6,21 @@ import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 /**
- * This class deletes the database files if present,and constructs 
- * new blank ones with the proper tables and indicies.
- * @author 
+ * This class deletes all of the required database files if present, and
+ * constructs new blank ones with the proper tables and indicies.
+ * 
+ * @author
  */
 public class DbBuilder {
-	
+
 	private static final String DB_FILE = Configuration.DB_NAME;
-	
+
 	public static void main(String[] args) throws SqlJetException {
 		File dbFile = new File(DB_FILE);
-		if(dbFile.exists()) {
+		if (dbFile.exists()) {
 			dbFile.delete();
 		}
+		//Does System.gc() need to be called here and after the other two deletes?
 		SqlJetDb db = SqlJetDb.open(dbFile, true);
 		db.getOptions().setAutovacuum(true);
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
@@ -36,9 +38,9 @@ public class DbBuilder {
 			db.close();
 			System.out.println("Db Built");
 		}
-		
+
 		File walletDbFile = new File(Configuration.WALLET_DB_NAME);
-		if(walletDbFile.exists()) {
+		if (walletDbFile.exists()) {
 			walletDbFile.delete();
 		}
 		SqlJetDb wdb = SqlJetDb.open(walletDbFile, true);
@@ -51,9 +53,9 @@ public class DbBuilder {
 			wdb.commit();
 			wdb.close();
 		}
-		
+
 		File peerDbFile = new File(Configuration.PEER_DB_NAME);
-		if(peerDbFile.exists()) {
+		if (peerDbFile.exists()) {
 			peerDbFile.delete();
 		}
 		SqlJetDb pdb = SqlJetDb.open(peerDbFile, true);
@@ -62,13 +64,12 @@ public class DbBuilder {
 		try {
 			pdb.createTable("CREATE TABLE peers (ip VARCHAR(15))");
 			pdb.createIndex("CREATE INDEX peer_index on peers(ip)");
-			
+
 		} finally {
 			pdb.commit();
 			pdb.close();
 		}
 		System.gc();
 	}
-	
 
 }

@@ -1,12 +1,12 @@
 #Re-write WalletPanel.newTx()??, and possibly move the logic into another class altogether
 
-#Comment Miner, Tools, Configuration
+#Move all verification tools from Tools into VerificationTools
+
+#Verify block reward on coinbase transactions in Tools.verifyTransaction()
 
 #Modify verifyTransaction() to also check the number of confirms a transaction has
 
-#create Tools.getDifficulty()
-
-#Modify Miner.run() to use a target instead of a certain number of leading 0's
+#Modify Miner.run() and Genesis.main() to use a target instead of a certain number of leading 0's
 
 #write a method to make a packed representation of a hex target number
 	Tools.packTarget()

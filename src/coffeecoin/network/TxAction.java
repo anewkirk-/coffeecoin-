@@ -2,7 +2,8 @@ package coffeecoin.network;
 
 /**
  * This class holds data for a transaction
- * @author 
+ * 
+ * @author
  */
 public class TxAction extends NetworkAction {
 
@@ -10,14 +11,15 @@ public class TxAction extends NetworkAction {
 	private String input, output, signature, publicKey;
 	private long amt, timestamp;
 	private int blockno;
-	
+
 	public TxAction(String input, long amt, String output) {
 		this.input = input;
 		this.amt = amt;
 		this.setOutput(output);
 	}
 
-	public TxAction(String input2, long amt2, String output2, String publickey, long timestamp, int blockno) {
+	public TxAction(String input2, long amt2, String output2, String publickey,
+			long timestamp, int blockno) {
 		this.input = input2;
 		this.amt = amt2;
 		this.setOutput(output2);
@@ -73,5 +75,5 @@ public class TxAction extends NetworkAction {
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+
 }

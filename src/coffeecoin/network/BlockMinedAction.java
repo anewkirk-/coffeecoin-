@@ -1,12 +1,12 @@
 package coffeecoin.network;
 
 /**
- * This class is used to hold data
- * from a mined block.
- * @author 
+ * This class is used to hold data from a mined block.
+ * 
+ * @author
  */
 public class BlockMinedAction extends NetworkAction {
-	
+
 	private static final long serialVersionUID = 8778067921249368708L;
 	private long timestamp;
 	private String publickey;

@@ -11,32 +11,33 @@ import org.tmatesoft.sqljet.core.table.ISqlJetTable;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 /**
- * This class contains methods for manipulating
- * the wallet database
- * @author 
+ * This class contains methods for manipulating the wallet database
+ * 
+ * @author
  */
 public class WalletDbManager {
-	
+
 	private static WalletDbManager instance;
-	
-	private WalletDbManager() {}
-	
+
+	private WalletDbManager() {
+	}
+
 	/**
 	 * This is a singleton class
 	 */
 	public static WalletDbManager getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new WalletDbManager();
 		}
 		return instance;
 	}
 
 	/**
-	 * Checks if a given address is already in
-	 * the wallet db, if not then the address
-	 * is added.
+	 * Checks if a given address is already in the wallet db, if not then the
+	 * address is added.
 	 */
-	public void addNewAddress(String address, String publickey, String privatekey) throws SqlJetException {
+	public void addNewAddress(String address, String publickey,
+			String privatekey) throws SqlJetException {
 		File wFile = new File(Configuration.WALLET_DB_NAME);
 		SqlJetDb wDb = SqlJetDb.open(wFile, true);
 		wDb.beginTransaction(SqlJetTransactionMode.WRITE);
@@ -44,15 +45,15 @@ public class WalletDbManager {
 		//
 		ISqlJetCursor cursor = addressTable.lookup("wallet_index");
 		boolean alreadyPresent = false;
-		if(!cursor.eof()) {
+		if (!cursor.eof()) {
 			do {
-				if(address.equals(cursor.getString("address"))) {
+				if (address.equals(cursor.getString("address"))) {
 					alreadyPresent = true;
 				}
-			} while(cursor.next());
+			} while (cursor.next());
 		}
 		//
-		if(!alreadyPresent) {
+		if (!alreadyPresent) {
 			try {
 				addressTable.insert(address, publickey, privatekey);
 			} finally {
@@ -62,10 +63,9 @@ public class WalletDbManager {
 			}
 		}
 	}
-	
+
 	/**
-	 * returns an arraylist of every publickey
-	 * in the wallet db
+	 * returns an arraylist of every publickey in the wallet db
 	 */
 	public ArrayList<String> getAddresses() throws SqlJetException {
 		ArrayList<String> addressList = new ArrayList<String>();
@@ -74,20 +74,19 @@ public class WalletDbManager {
 		wDb.beginTransaction(SqlJetTransactionMode.READ_ONLY);
 		ISqlJetTable addressTable = wDb.getTable("wallet");
 		ISqlJetCursor cursor = addressTable.lookup("wallet_index");
-		if(!cursor.eof()) {
+		if (!cursor.eof()) {
 			do {
 				addressList.add(cursor.getString("address"));
-			} while(cursor.next());
+			} while (cursor.next());
 		}
 		cursor.close();
 		wDb.close();
 		return addressList;
 	}
-	
+
 	/**
-	 * returns the private key associated with a given
-	 * address, if the address is in the db. Used to sign
-	 * transactions.
+	 * returns the private key associated with a given address, if the address
+	 * is in the db. Used to sign transactions.
 	 */
 	public String getPrivateKey(String address) throws SqlJetException {
 		String privkey = "";
@@ -96,12 +95,12 @@ public class WalletDbManager {
 		wDb.beginTransaction(SqlJetTransactionMode.READ_ONLY);
 		ISqlJetTable addressTable = wDb.getTable("wallet");
 		ISqlJetCursor cursor = addressTable.lookup("wallet_index");
-		if(!cursor.eof()) {
+		if (!cursor.eof()) {
 			do {
-				if(cursor.getString("address").equals(address)) {
+				if (cursor.getString("address").equals(address)) {
 					privkey = cursor.getString("privatekey");
 				}
-			} while(cursor.next());
+			} while (cursor.next());
 		}
 		cursor.close();
 		wDb.close();
@@ -109,34 +108,34 @@ public class WalletDbManager {
 	}
 
 	/**
-	 * Returns total balance of all addresses
-	 * in the database
+	 * Returns total balance of all addresses in the database
 	 */
 	public long getBalance() throws SqlJetException {
 		ArrayList<String> adds = getAddresses();
 		long bal = 0;
 		String current = "";
 		BlockchainDbManager dbman = BlockchainDbManager.getInstance();
-		for(Iterator<String> it = adds.iterator(); it.hasNext();) {
+		for (Iterator<String> it = adds.iterator(); it.hasNext();) {
 			current = it.next();
 			bal += dbman.checkBalance(current);
 		}
 		return bal;
 	}
 
-	public String getPublicKeyFromAddress(String address) throws SqlJetException {
+	public String getPublicKeyFromAddress(String address)
+			throws SqlJetException {
 		String publicKey = "";
 		File wFile = new File(Configuration.WALLET_DB_NAME);
 		SqlJetDb wDb = SqlJetDb.open(wFile, false);
 		wDb.beginTransaction(SqlJetTransactionMode.READ_ONLY);
 		ISqlJetTable addressTable = wDb.getTable("wallet");
 		ISqlJetCursor cursor = addressTable.lookup("wallet_index");
-		if(!cursor.eof()) {
+		if (!cursor.eof()) {
 			do {
-				if(cursor.getString("address").equals(address)) {
+				if (cursor.getString("address").equals(address)) {
 					publicKey = cursor.getString("publickey");
 				}
-			} while(cursor.next());
+			} while (cursor.next());
 		}
 		cursor.close();
 		wDb.close();

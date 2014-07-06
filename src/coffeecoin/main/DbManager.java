@@ -6,7 +6,8 @@ import java.io.IOException;
 
 /**
  * Contains methods common to all DBManager classes
- * @author 
+ * 
+ * @author
  */
 public abstract class DbManager {
 
@@ -16,16 +17,18 @@ public abstract class DbManager {
 		byte[] bFile = new byte[(int) db.length()];
 		int offset = 0;
 		int numread = 0;
-		while(offset < bFile.length && (numread=fis.read(bFile, offset, bFile.length-offset)) >= 0) {
-            offset += numread;
+		while (offset < bFile.length
+				&& (numread = fis.read(bFile, offset, bFile.length - offset)) >= 0) {
+			offset += numread;
 		}
-        if (offset < bFile.length) {
-        	fis.close();
-            throw new IOException("Could not completely read file "+db.getName());
-        }
+		if (offset < bFile.length) {
+			fis.close();
+			throw new IOException("Could not completely read file "
+					+ db.getName());
+		}
 		fis.close();
 		System.gc();
 		return bFile;
 	}
-	
+
 }

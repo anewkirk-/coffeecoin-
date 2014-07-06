@@ -6,10 +6,11 @@ import java.net.Socket;
 
 /**
  * This class sends a NetworkAction over a Socket.
- * @author 
+ * 
+ * @author
  */
 public class NetworkSender extends Thread {
-	
+
 	private Socket socket;
 	private NetworkAction action;
 
@@ -17,10 +18,10 @@ public class NetworkSender extends Thread {
 		this.socket = socket;
 		this.action = a;
 	}
-	
+
 	/**
-	 * This method is responsible for actually sending the 
-	 * action over the socket.
+	 * This method is responsible for actually sending the action over the
+	 * socket.
 	 */
 	@Override
 	public void run() {
@@ -32,7 +33,8 @@ public class NetworkSender extends Thread {
 			ois.close();
 			os.flush();
 			os.close();
-		} catch(Exception e){}
+		} catch (Exception e) {
+		}
 	}
 
 }

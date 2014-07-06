@@ -11,37 +11,39 @@ import org.tmatesoft.sqljet.core.table.ISqlJetTable;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 /**
- * This class contains methods for CRUD operations
- * on the peer database
- * @author 
+ * This class contains methods for CRUD operations on the peer database
+ * 
+ * @author
  */
 public class PeerDbManager {
-	
+
 	private static PeerDbManager instance;
-	
-	private PeerDbManager(){}
-	
+
+	private PeerDbManager() {
+	}
+
 	public static PeerDbManager getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new PeerDbManager();
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Returns an arraylist of each peer in the db
 	 */
-	public synchronized ArrayList<InetAddress> getPeers() throws SqlJetException, UnknownHostException {
+	public synchronized ArrayList<InetAddress> getPeers()
+			throws SqlJetException, UnknownHostException {
 		ArrayList<InetAddress> peers = new ArrayList<InetAddress>();
 		File dbFile = new File(Configuration.PEER_DB_NAME);
 		SqlJetDb db = SqlJetDb.open(dbFile, false);
 		db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
 		ISqlJetTable peerTable = db.getTable("peers");
 		ISqlJetCursor cursor = peerTable.lookup("peer_index");
-		if(!cursor.eof()){
+		if (!cursor.eof()) {
 			do {
 				peers.add(InetAddress.getByName(cursor.getString("ip")));
-			} while(cursor.next());
+			} while (cursor.next());
 		}
 		cursor.close();
 		db.close();
