@@ -12,8 +12,9 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Date;
+import java.util.Iterator;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -21,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+
 import org.tmatesoft.sqljet.core.SqlJetException;
 
 import coffeecoin.main.BlockchainDbManager;
@@ -44,13 +46,13 @@ import coffeecoin.network.TxAction;
 public class WalletPanel extends JPanel {
 	
 	private static final long serialVersionUID = 3649700800374438134L;
-	private JList<Object> list;
+	private JList list;
 	private JLabel balance;
 	private JButton sendButton;
 	private JButton addButton;
 
 	public WalletPanel() throws SqlJetException {
-		list = new JList<Object>(); //data has type Object[]
+		list = new JList(); //data has type Object[]
 		list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		list.setVisibleRowCount(-1);
