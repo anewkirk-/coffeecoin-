@@ -26,7 +26,7 @@ public class DbBuilder {
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		try {
 			db.getOptions().setUserVersion(1);
-			db.createTable("CREATE TABLE blockchain (timestamp INTEGER, publickey VARCHAR(128), hash VARCHAR(128), nonce INTEGER, transactions VARCHAR(1024), blockno INTEGER PRIMARY KEY)");
+			db.createTable("CREATE TABLE blockchain (timestamp INTEGER, publickey VARCHAR(128), hash VARCHAR(128), nonce INTEGER, transactions VARCHAR(1024), target VARCHAR(64), blockno INTEGER PRIMARY KEY)");
 			db.createTable("CREATE TABLE transactions (input VARCHAR(128), amt INTEGER, output VARCHAR(128), publickey VARCHAR(128), signature VARCHAR(128), timestamp INTEGER, blockno INTEGER)");
 			db.createIndex("CREATE INDEX blockno_index ON blockchain(blockno)");
 			db.createIndex("CREATE INDEX blockchain_index ON blockchain(timestamp, publickey, hash, nonce, transactions, blockno)");

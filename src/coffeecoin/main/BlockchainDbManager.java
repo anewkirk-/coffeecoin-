@@ -3,6 +3,8 @@ package coffeecoin.main;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
+
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
@@ -185,6 +187,8 @@ public class BlockchainDbManager extends DbManager {
 		ISqlJetTable txTable = db.getTable("transactions");
 		ISqlJetCursor cursor = txTable.lookup("transaction_index");
 		String input, output, publickey, signature, hash, transactions;
+		//Should target have a different default value?
+		BigInteger target = null;
 		long timestamp, nonce, amt;
 		int blockno;
 
@@ -196,6 +200,7 @@ public class BlockchainDbManager extends DbManager {
 				publickey = cursor.getString("publickey");
 				signature = cursor.getString("signature");
 				timestamp = cursor.getInteger("timestamp");
+				target = new BigInteger(cursor.getString("target"), 16);
 				blockno = (int) cursor.getInteger("blockno");
 				TxAction currentTx = new TxAction(input, amt, output,
 						publickey, timestamp, blockno);
@@ -218,9 +223,9 @@ public class BlockchainDbManager extends DbManager {
 				hash = cursor.getString("hash");
 				nonce = cursor.getInteger("nonce");
 				blockno = (int) cursor.getInteger("blockno");
-				transactions = getTransactions(blockno - 1);
+				transactions = getTransactionsFromBlock(blockno - 1);
 				BlockMinedAction currentBlock = new BlockMinedAction(timestamp,
-						publickey, hash, nonce, transactions, blockno);
+						publickey, hash, nonce, transactions, target, blockno);
 				boolean valid = VerificationTools.verifyBlock(currentBlock);
 				if (!valid) {
 					return false;
@@ -284,7 +289,7 @@ public class BlockchainDbManager extends DbManager {
 	 * Returns a string built from every transaction listed on a given block
 	 * number.
 	 */
-	public synchronized String getTransactions(int blockn)
+	public synchronized String getTransactionsFromBlock(int blockn)
 			throws SqlJetException {
 		/*
 		 * For consistency, the transaction strings built by this method should
@@ -316,6 +321,51 @@ public class BlockchainDbManager extends DbManager {
 		return transactions;
 
 	}
+	
+	public synchronized long getTimestampFromBlock(int blockno) throws SqlJetException {
+		if (blockno < 2) {
+			//What should the default value be?!
+			return -1;
+		}
+		File dbFile = new File(Configuration.DB_NAME);
+		SqlJetDb db = SqlJetDb.open(dbFile, false);
+		db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
+		ISqlJetTable blockchain = db.getTable("blockchain");
+		ISqlJetCursor cursor = blockchain.lookup("blockchain_index");
+		long timestamp = -1;
+		if (!cursor.eof()) {
+			do {
+				if (cursor.getInteger("blockno") == blockno) {
+					timestamp = cursor.getInteger("timestamp");
+				}
+			} while (cursor.next());
+		}
+		cursor.close();
+		db.close();
+		return timestamp;
+	}
+	
+	public synchronized BigInteger getTargetFromBlock(int blockno) throws SqlJetException {
+		if (blockno < 2) {
+			return Configuration.DIFFICULTY_1_TARGET;
+		}
+		File dbFile = new File(Configuration.DB_NAME);
+		SqlJetDb db = SqlJetDb.open(dbFile, false);
+		db.beginTransaction(SqlJetTransactionMode.READ_ONLY);
+		ISqlJetTable blockchain = db.getTable("blockchain");
+		ISqlJetCursor cursor = blockchain.lookup("blockchain_index");
+		String targetString = "";
+		if (!cursor.eof()) {
+			do {
+				if (cursor.getInteger("blockno") == blockno) {
+					targetString = cursor.getString("target");
+				}
+			} while (cursor.next());
+		}
+		cursor.close();
+		db.close();
+		return new BigInteger(targetString, 16);
+	}
 
 	/**
 	 * Returns a BlockMinedAction built from the data in the db for a given
@@ -338,9 +388,10 @@ public class BlockchainDbManager extends DbManager {
 					String hash = cursor.getString("hash");
 					long nonce = cursor.getInteger("nonce");
 					String transactions = cursor.getString("transactions");
+					BigInteger target = new BigInteger(cursor.getString("target"), 16);
 					System.out.println("[++] TIMESTAMP:" + timestamp);
 					currentBlock = new BlockMinedAction(timestamp, publickey,
-							hash, nonce, transactions, blockno);
+							hash, nonce, transactions, target, blockno);
 					break;
 				}
 			} while (cursor.next());

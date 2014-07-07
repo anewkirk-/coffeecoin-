@@ -1,10 +1,15 @@
 package coffeecoin.main;
 
-import coffeecoin.network.*;
-import coffeecoin.ui.MainWindow;
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.tmatesoft.sqljet.core.SqlJetException;
+
+import coffeecoin.network.BlockMinedAction;
+import coffeecoin.network.ClientAgent;
+import coffeecoin.network.TxAction;
+import coffeecoin.network.UpdateAction;
+import coffeecoin.ui.MainWindow;
 
 public class Miner extends Thread {
 
@@ -12,6 +17,7 @@ public class Miner extends Thread {
 	private long timestamp;
 	private String transactions = "";
 	private String lastHash = "";
+	private BigInteger target;
 	private int blockno;
 
 	/**
@@ -62,7 +68,7 @@ public class Miner extends Thread {
 		System.out.println("\n\n[+]  Block Mined\n\n");
 		String publicKey = newKeyPair[0];
 		BlockMinedAction blockMined = new BlockMinedAction(timestamp,
-				publicKey, hash, nonce, this.transactions, blockno);
+				publicKey, hash, nonce, this.transactions, this.target, blockno);
 		boolean verified = false;
 		try {
 			verified = VerificationTools.verifyBlock(blockMined);
@@ -102,8 +108,15 @@ public class Miner extends Thread {
 		this.timestamp = new Date().getTime();
 		int currentBlock = dbman.getCurrentBlockNo(Configuration.DB_NAME);
 		this.blockno = currentBlock;
-		this.transactions = dbman.getTransactions(currentBlock - 1);
+		this.transactions = dbman.getTransactionsFromBlock(currentBlock - 1);
 		this.lastHash = dbman.getHashFromBlock(currentBlock - 1);
+		//Is the offset here -2 or -3??
+		BlockMinedAction twoBlocksPrevious = dbman.getBlock(currentBlock - 2);
+		BlockMinedAction lastBlock = dbman.getBlock(currentBlock - 1);
+		long timeElapsedOnLastBlock = (lastBlock.getTimestamp() - twoBlocksPrevious.getTimestamp());
+		BigInteger lastTarget = lastBlock.getTarget();
+		double lastDifficulty = Tools.findDifficultyFromTarget(lastTarget);
+		this.target = Tools.retarget(lastDifficulty, timeElapsedOnLastBlock, lastTarget);
 	}
 
 	/**

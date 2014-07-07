@@ -1,5 +1,7 @@
 package coffeecoin.network;
 
+import java.math.BigInteger;
+
 /**
  * This class is used to hold data from a mined block.
  * 
@@ -14,15 +16,17 @@ public class BlockMinedAction extends NetworkAction {
 	private long nonce;
 	private int blockno;
 	private String transactions;
+	private BigInteger target;
 
 	public BlockMinedAction(long timestamp, String publickey, String hash,
-			long nonce, String transactions, int blockno) {
+			long nonce, String transactions, BigInteger target, int blockno) {
 		this.setTimestamp(timestamp);
 		this.setPublickey(publickey);
 		this.setHash(hash);
 		this.setNonce(nonce);
-		this.setBlockno(blockno);
+		this.setTarget(target);
 		this.setTransactions(transactions);
+		this.setBlockno(blockno);
 	}
 
 	public long getTimestamp() {
@@ -71,6 +75,14 @@ public class BlockMinedAction extends NetworkAction {
 
 	public void setTransactions(String transactions) {
 		this.transactions = transactions;
+	}
+
+	public BigInteger getTarget() {
+		return target;
+	}
+
+	public void setTarget(BigInteger target) {
+		this.target = target;
 	}
 
 }

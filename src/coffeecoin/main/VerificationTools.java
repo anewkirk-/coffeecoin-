@@ -23,12 +23,14 @@ public class VerificationTools {
 		BlockchainDbManager dbman = BlockchainDbManager.getInstance();
 		if (currentTransaction.getInput().equals("coinbase")) {
 			/*
-			 * Check that the coinbase tx amount matches
-			 * Configuration.BLOCK_REWARD Do we need to check anything else to
+			 * Do we need to check anything else to
 			 * verify a coinbase transaction?
 			 */
-			System.out.println("[+] Verified coinbase transaction.");
-			return true;
+			if(currentTransaction.getAmt() == Configuration.BLOCK_REWARD) {
+				System.out.println("[+] Verified coinbase transaction.");
+				return true;
+			}
+			return false;
 		} else {
 			if (!verifyTxSignature(currentTransaction)) {
 				return false;

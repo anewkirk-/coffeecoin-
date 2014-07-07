@@ -1,5 +1,6 @@
 package coffeecoin.main;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.Random;
 
@@ -17,7 +18,7 @@ public class Genesis {
 	public static void main(String[] args) throws Exception {
 		Date d = new Date();
 		long time = d.getTime();
-
+		BigInteger target = Configuration.DIFFICULTY_1_TARGET;
 		Random gen = new Random();
 		String hash = "  ";
 		int nonce = 0;
@@ -37,9 +38,10 @@ public class Genesis {
 		System.out.println("Blockno: 1");
 		System.out.println("Nonce: " + nonce);
 		System.out.println("Timestamp: " + time);
+		System.out.println("Target: " + target.toString(16));
 
 		BlockMinedAction genesisBlock = new BlockMinedAction(time, "", hash,
-				nonce, "", 1);
+				nonce, "", target, 1);
 		if (VerificationTools.verifyBlock(genesisBlock)) {
 			System.out.println("Block Verified");
 			BlockchainDbManager dbman = BlockchainDbManager.getInstance();
